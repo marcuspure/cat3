@@ -8,6 +8,10 @@
         >
       </p>
       <h2>login to</h2>
+      <h2>Login Success</h2>
+      <p>
+        Hi, <strong>{{ user.email }}</strong> !
+      </p>
       <div class="inputs">
         <div class="input">
           <input type="text" placeholder="e-mail" v-model="email" />
@@ -43,6 +47,20 @@ export default {
       email: null,
       password: null,
     };
+  },
+  created() {
+    if (!this.user.account) {
+      this.$router.push("login");
+    }
+  },
+  computed: {
+    user() {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      if (userData) {
+        return userData;
+      }
+      return "";
+    },
   },
 };
 </script>
