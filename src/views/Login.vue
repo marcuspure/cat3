@@ -8,10 +8,6 @@
         >
       </p>
       <h2>login to</h2>
-      <h2>Login Success</h2>
-      <p>
-        Hi, <strong>{{ user.email }}</strong> !
-      </p>
       <div class="inputs">
         <div class="input">
           <input type="text" placeholder="e-mail" v-model="email" />
@@ -21,13 +17,16 @@
           <input type="password" placeholder="password" v-model="password" />
           <password class="icon" />
         </div>
+        <div class="error" v-show="error">{{ this.errorMsg }}</div>
       </div>
+
       <router-link class="forgot-password" :to="{ name: 'ForgotPassword' }"
         >forgot password?</router-link
       >
-      <button>sing in</button>
+      <button @click.prevent="singIn">sing in</button>
       <div class="angle"></div>
     </form>
+
     <div class="background"></div>
   </div>
 </template>
@@ -35,7 +34,8 @@
 <script>
 import email from "../assets/Icons/envelope-regular.svg";
 import password from "../assets/Icons/lock-alt-solid.svg";
-
+import firebase from "firebase/app";
+import "firebase/auth";
 export default {
   name: "Login",
   components: {
@@ -44,24 +44,44 @@ export default {
   },
   data() {
     return {
-      email: null,
-      password: null,
+      email: "",
+      password: "",
+      error: null,
+      errorMsg: "",
     };
   },
-  created() {
-    if (!this.user.account) {
-      this.$router.push("login");
-    }
-  },
-  computed: {
-    user() {
-      const userData = JSON.parse(localStorage.getItem("user"));
-      if (userData) {
-        return userData;
-      }
-      return "";
+  methods: {
+    singIn() {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(this.email, this.password)
+        .then(() => {
+          this.$router.push({ name: "Home" });
+          this.error = false;
+          this.errorMsg = "";
+          console.log(firebase.auth().currentUser.uid);
+        })
+        .catch((err) => {
+          this.error = true;
+          this.errorMsg = err.message;
+        });
     },
   },
+  // created() {
+  //   if (!this.user.account) {
+  //     this.$router.push("login");
+  //   }
+  // },
+
+  // computed: {
+  //   user() {
+  //     const userData = JSON.parse(localStorage.getItem("user"));
+  //     if (userData) {
+  //       return userData;
+  //     }
+  //     return "";
+  //   },
+  // },
 };
 </script>
 

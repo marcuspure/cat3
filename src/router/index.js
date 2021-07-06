@@ -15,6 +15,7 @@ const routes = [
     component: Home,
     meta: {
       title: "Home",
+      requiresAuth: false,
     },
   },
   {
@@ -23,6 +24,7 @@ const routes = [
     component: Blogs,
     meta: {
       title: "Blogs",
+      requiresAuth: false,
     },
   },
   {
@@ -31,6 +33,7 @@ const routes = [
     component: Login,
     meta: {
       title: "Login",
+      requiresAuth: false,
     },
   },
   {
@@ -39,6 +42,7 @@ const routes = [
     component: Register,
     meta: {
       title: "Register",
+      requiresAuth: false,
     },
   },
   {
@@ -47,6 +51,7 @@ const routes = [
     component: ForgotPassword,
     meta: {
       title: "ForgotPassword",
+      requiresAuth: false,
     },
   },
 ];

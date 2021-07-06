@@ -1,7 +1,7 @@
 <template>
   <footer>
     <div class="container">
-      <div class="life">
+      <div class="left">
         <div class="col-1">
           <router-link class="header" :to="{ name: 'Home' }">Cats</router-link>
           <ul>
@@ -25,9 +25,9 @@
             <router-link v-if="user" class="link" :to="{ name: 'newpost' }"
               >Creat Post</router-link
             >
-            <router-link v-if="!user" class="link" :to="{ name: 'login' }"
-              >login / Register
-            </router-link>
+            <router-link v-if="!user" class="link" :to="{ name: 'Login' }"
+              >Login In / Register</router-link
+            >
           </ul>
         </div>
       </div>
@@ -49,6 +49,11 @@ export default {
     youtube,
     twitter,
     instagram,
+  },
+  computed: {
+    user() {
+      return this.$store.state.user;
+    },
   },
 };
 </script>
