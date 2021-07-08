@@ -2,39 +2,36 @@
   <div class="form-wrap">
     <form class="register">
       <p class="login-register">
-        already have account?
+        Already have an account?
         <router-link class="router-link" :to="{ name: 'Login' }"
           >Login</router-link
         >
       </p>
-      <h2>Creat your account</h2>
-      <!-- 名字前三  -->
+      <h2>Create Your FireBlog Account</h2>
       <div class="inputs">
         <div class="input">
-          <input type="text" placeholder="first name" v-model="firstName" />
+          <input type="text" placeholder="First Name" v-model="firstName" />
           <user class="icon" />
         </div>
         <div class="input">
-          <input type="text" placeholder="last name" v-model="lastName" />
+          <input type="text" placeholder="Last Name" v-model="lastName" />
           <user class="icon" />
         </div>
         <div class="input">
-          <input type="text" placeholder="User Name" v-model="userName" />
+          <input type="text" placeholder="Username" v-model="username" />
           <user class="icon" />
         </div>
-        <!-- email -->
         <div class="input">
-          <input type="text" placeholder="e-mail" v-model="email" />
+          <input type="text" placeholder="Email" v-model="email" />
           <email class="icon" />
         </div>
         <div class="input">
-          <input type="password" placeholder="password" v-model="password" />
+          <input type="password" placeholder="Password" v-model="password" />
           <password class="icon" />
         </div>
-        <div class="error" v-show="error">{{ this.errorMsg }}</div>
+        <div v-show="error" class="error">{{ this.errorMsg }}</div>
       </div>
-
-      <button @click.prevent="register">sing up</button>
+      <button @click.prevent="register">Sign Up</button>
       <div class="angle"></div>
     </form>
     <div class="background"></div>
@@ -59,22 +56,13 @@ export default {
     return {
       firstName: "",
       lastName: "",
-      userName: "",
+      username: "",
       email: "",
       password: "",
       error: null,
       errorMsg: "",
     };
   },
-  // methods: {
-  //   login() {
-  //     this.$store.commit({
-  //       type: "setUserData",
-  //       userData: this.user,
-  //     });
-  //     this.$router.push("/");
-  //   },
-  // },
   methods: {
     async register() {
       if (

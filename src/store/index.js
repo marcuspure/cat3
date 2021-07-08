@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../firebase/firebaseInit";
+import { get } from "core-js/fn/dict";
 Vue.use(Vuex);
 // const localStoragePlugin = (store) => {
 //   store.subscribe((mutation, { user }) => {
@@ -37,6 +38,13 @@ export default new Vuex.Store({
         blogDate: "2021",
       },
     ],
+    blogPosts: [],
+    postLoad: null,
+    blogHTML: "Write your blog title here...",
+    blogTitle: "",
+    blogPhotoName: "",
+    blogPhotoFileURL: null,
+    blogPhotoPreview: null,
 
     editPost: null,
     user: null,
@@ -49,32 +57,73 @@ export default new Vuex.Store({
     profileInitials: null,
   },
   mutations: {
+    newBlogPost(state, payload) {
+      state.blogHTML = payload;
+    },
+    updateBlogTitle(state, payload) {
+      state.blogTitle = payload;
+    },
+    fileNameChange(state, payload) {
+      state.blogPhotoName = payload;
+    },
+
+    createFileURL(state, payload) {
+      state.blogPhotoFileURL = payload;
+    },
+    openPhotoPreview(state) {
+      state.blogPhotoPreview = !state.blogPhotoPreview;
+    },
     toggleEditPost(state, payload) {
       state.editPost = payload;
       console.log(state.editPost);
     },
+    updatesUser(state, payload) {
+      state.user = payload;
+    },
     // doc=dbResults
     setProfileInfo(state, doc) {
       state.profileId = doc.id;
-      state.profileEmail = doc.email();
+      state.profileEmail = doc.data().email;
+      state.profileFirstName = doc.data().firstName;
+      state.profileLastName = doc.data().lastName;
+      state.profileUsername = doc.data().username;
     },
-    // setUserData(state, { userData }) {
-    //   state.user.firstName = userData.firstName;
-    //   state.user.lastName = userData.lastName;
-    //   state.user.userName = userData.userName;
-    //   state.user.emailName = userData.emailName;
-    //   state.user.password = userData.password;
-
-    //   state.user.isLogin = true;
-    // },
+    setProfileInitials(state) {
+      state.profileInitials =
+        state.profileFirstName.match(/(\b\S)?/g).join("") +
+        state.profileLastName.match(/(\b\S)?/g).join("");
+    },
+    changeFirstName(state, payload) {
+      state.profileFirstName = payload;
+    },
+    changeLastName(state, payload) {
+      state.profileLastName = payload;
+    },
+    changeUsername(state, payload) {
+      state.profileUsername = payload;
+    },
   },
+
   actions: {
-    async getCurrenUser(commit) {
+    async getCurrenUser({ commit }) {
       const dataBase = await db
         .collection("users")
         .doc(firebase.auth().currentUser.uid);
       const dbResults = await dataBase.get();
       commit("setProfileInfo", dbResults);
+      commit("setProfileInitials");
+      console.log(dbResults);
+    },
+    // async getPost({ state }) {
+    //   const dataBase = await db.collection("blogPost").orderBy("date", "desc");
+    // },
+    async updateUserSettings({ commit, state }) {
+      const dataBase = await db.collection("users").doc(state.profileId);
+      await dataBase.update({
+        firstName: state.profileFirstName,
+        lastName: state.profileLastName,
+        username: state.profileUsername,
+      });
       commit("setProfileInitials");
     },
   },
