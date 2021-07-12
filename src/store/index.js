@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import firebase from "firebase/app";
 import "firebase/auth";
 import db from "../firebase/firebaseInit";
-import { get } from "core-js/fn/dict";
+
 Vue.use(Vuex);
 // const localStoragePlugin = (store) => {
 //   store.subscribe((mutation, { user }) => {
@@ -16,30 +16,30 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     // plugins: [localStoragePlugin],
-    sampleBlogCards: [
-      {
-        blogtitle: "Blog Card # 1",
-        blogCoverPhoto: "stock-1",
-        blogDate: "2021",
-      },
-      {
-        blogtitle: "Blog Card # 2",
-        blogCoverPhoto: "stock-2",
-        blogDate: "2021",
-      },
-      {
-        blogtitle: "Blog Card # 3",
-        blogCoverPhoto: "stock-3",
-        blogDate: "2021",
-      },
-      {
-        blogtitle: "Blog Card # 4",
-        blogCoverPhoto: "stock-4",
-        blogDate: "2021",
-      },
-    ],
+    // sampleBlogCards: [
+    //   {
+    //     blogtitle: "Blog Card # 1",
+    //     blogCoverPhoto: "stock-1",
+    //     blogDate: "2021",
+    //   },
+    //   {
+    //     blogtitle: "Blog Card # 2",
+    //     blogCoverPhoto: "stock-2",
+    //     blogDate: "2021",
+    //   },
+    //   {
+    //     blogtitle: "Blog Card # 3",
+    //     blogCoverPhoto: "stock-3",
+    //     blogDate: "2021",
+    //   },
+    //   {
+    //     blogtitle: "Blog Card # 4",
+    //     blogCoverPhoto: "stock-4",
+    //     blogDate: "2021",
+    //   },
+    // ],
     blogPosts: [],
-    postLoad: null,
+    postLoaded: null,
     blogHTML: "Write your blog title here...",
     blogTitle: "",
     blogPhotoName: "",
@@ -56,6 +56,15 @@ export default new Vuex.Store({
     profileId: null,
     profileInitials: null,
   },
+  getters: {
+    blogPostsFeed(state) {
+      return state.blogPosts.slice(0, 2);
+    },
+    blogPostsCards(state) {
+      return state.blogPosts.slice(2, 6);
+    },
+  },
+
   mutations: {
     newBlogPost(state, payload) {
       state.blogHTML = payload;
@@ -77,6 +86,12 @@ export default new Vuex.Store({
       state.editPost = payload;
       console.log(state.editPost);
     },
+    filterPost(state, payload) {
+      state.blogPosts = state.blogPosts.filter(
+        (post) => post.blogID !== payload
+      );
+    },
+
     updatesUser(state, payload) {
       state.user = payload;
     },
@@ -102,6 +117,12 @@ export default new Vuex.Store({
     changeUsername(state, payload) {
       state.profileUsername = payload;
     },
+    setBlogstate(state, payload) {
+      state.blogTitle = payload.blogTitle;
+      state.blogHTML = payload.blogHTML;
+      state.blogPhotoFileURL = payload.blogCoverPhoto;
+      state.blogPhotoName = payload.blogCoverPhotoName;
+    },
   },
 
   actions: {
@@ -114,9 +135,34 @@ export default new Vuex.Store({
       commit("setProfileInitials");
       console.log(dbResults);
     },
-    // async getPost({ state }) {
-    //   const dataBase = await db.collection("blogPost").orderBy("date", "desc");
-    // },
+    async getPost({ state }) {
+      const dataBase = await db.collection("blogPosts").orderBy("date", "desc");
+      const dbResults = await dataBase.get();
+      dbResults.forEach((doc) => {
+        if (!state.blogPosts.some((post) => post.blogID === doc.id)) {
+          const data = {
+            blogID: doc.data().blogID,
+            blogHTML: doc.data().blogHTML,
+            blogCoverPhoto: doc.data().blogCoverPhoto,
+            blogTitle: doc.data().blogTitle,
+            blogDate: doc.data().date,
+            blogCoverPhotoName: doc.data().blogCoverPhotoName,
+          };
+          state.blogPosts.push(data);
+        }
+      });
+      state.postLoaded = true;
+    },
+    async updatePost({ commit, dispatch }, payload) {
+      commit("filterPost", payload);
+      await dispatch("getPost");
+    },
+    async deletePost({ commit }, payload) {
+      const getPost = await db.collection("blogPosts").doc(payload);
+      await getPost.delete();
+      commit("filterPost", payload);
+    },
+
     async updateUserSettings({ commit, state }) {
       const dataBase = await db.collection("users").doc(state.profileId);
       await dataBase.update({

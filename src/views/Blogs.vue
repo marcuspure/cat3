@@ -5,17 +5,12 @@
         <span>toggle edit post</span>
         <input type="checkbox" v-model="editPost" />
       </div>
-      <BlogCard
-        :post="post"
-        v-for="(post, index) in sampleBlogCards"
-        :key="index"
-      />
+      <BlogCard :post="post" v-for="(post, index) in blogPosts" :key="index" />
     </div>
   </div>
 </template>
 
 <script>
-// import Vue from "vue";
 // import axios from "axios";
 import BlogCard from "../components/BlogCard";
 export default {
@@ -24,8 +19,8 @@ export default {
     BlogCard,
   },
   computed: {
-    sampleBlogCards() {
-      return this.$store.state.sampleBlogCards;
+    blogPosts() {
+      return this.$store.state.blogPosts;
     },
     editPost: {
       get() {

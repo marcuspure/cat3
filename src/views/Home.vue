@@ -3,7 +3,7 @@
     <BlogPost v-if="!user" :post="welcomeScreen" />
     <BlogPost
       :post="post"
-      v-for="(post, index) in sampleBlogPost"
+      v-for="(post, index) in blogPostsFeed"
       :key="index"
     />
     <div class="blog-card-wrap">
@@ -12,7 +12,7 @@
         <div class="blog-cards">
           <BlogCard
             :post="post"
-            v-for="(post, index) in sampleBlogCards"
+            v-for="(post, index) in blogPostsCards"
             :key="index"
           />
         </div>
@@ -46,19 +46,14 @@ export default {
         welcomeScreen: true,
         photo: "coding",
       },
-      sampleBlogPost: [
-        {
-          title: "巨蟹座星座運勢",
-          blogCoverPhoto: "beautiful-stories",
-          blogHTML:
-            "今天的巨蟹最幸運的顏色是灰色，特別是灰色的封面的書能為你帶來好運。今天適合前往遠方旅遊。今天的運氣相當不錯，比之前還更好。幸運的巨蟹兒，需要花點時間關心自己的身體，但健康狀況是沒有問題的，菸酒傷身，你應該很清楚怎麼樣對身體最好。1 是你想要投機時候可以參考的數字。如果談到財運，巨蟹座的你，最近投資可能會有好收穫，但還是理性為上，不要僥倖投機。4日平常不是很熟的人會主動對你伸出援手，但不要故意得罪別人。多多上網，會找到你想要的線索。今天最好的方位在西南方，特別是對於健康的影響更大。",
-        },
-      ],
     };
   },
   computed: {
-    sampleBlogCards() {
-      return this.$store.state.sampleBlogCards;
+    blogPostsCards() {
+      return this.$store.getters.blogPostsCards;
+    },
+    blogPostsFeed() {
+      return this.$store.getters.blogPostsFeed;
     },
     user() {
       return this.$store.state.user;

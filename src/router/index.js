@@ -10,6 +10,9 @@ import Admin from "../views/Admin.vue";
 import CreatePost from "../views/CreatePost.vue";
 import BlogPreview from "../views/BlogPreview.vue";
 import ViewBlog from "../views/ViewBlog.vue";
+import EditBlog from "../views/EditBlog.vue";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 Vue.use(VueRouter);
 
@@ -87,6 +90,15 @@ const routes = [
     },
   },
   {
+    path: "/edit-blog/:blogid",
+    name: "EditBlog",
+    component: EditBlog,
+    meta: {
+      title: "Edit Blog",
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/post-preview ",
     name: "BlogPreview",
     component: BlogPreview,
@@ -96,7 +108,7 @@ const routes = [
     },
   },
   {
-    path: "/view-blog ",
+    path: "/view-blog/:blogid",
     name: "ViewBlog",
     component: ViewBlog,
     meta: {
@@ -115,4 +127,28 @@ router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | cat`;
   next();
 });
+
+router.beforeEach(async (to, from, next) => {
+  let user = firebase.auth().currentUser;
+  let admin = null;
+  if (user) {
+    let token = await user.getIdTokenResult();
+    admin = token.claims.admin;
+  }
+
+  if (to.matched.some((res) => res.meta.requiresAuth)) {
+    if (user) {
+      if (to.matched.some((res) => res.meta.requiresAdmin)) {
+        if (admin) {
+          return next();
+        }
+        return next({ name: "Home" });
+      }
+      return next();
+    }
+    return next({ name: "Home" });
+  }
+  return next();
+});
+
 export default router;

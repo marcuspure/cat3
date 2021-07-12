@@ -3,13 +3,16 @@
     <div class="blog-content">
       <div>
         <h2 v-if="post.welcomeScreen">{{ post.title }}</h2>
-        <h2 v-else>{{ post.title }}</h2>
+        <h2 v-else>{{ post.blogTitle }}</h2>
         <p v-if="post.welcomeScreen">{{ post.blogPost }}</p>
-        <p v-else class="content-preview">{{ post.blogHTML }}</p>
+        <p class="content-preview" v-else v-html="post.blodHTML"></p>
         <router-link class="link link-light" v-if="post.welcomeScreen" to="#"
           >login/register <Arrow class="arrow arrw-light"
         /></router-link>
-        <router-link class="link" v-else to="#"
+        <router-link
+          class="link"
+          v-else
+          :to="{ name: 'ViewBlog', params: { blogid: this.post.blogID } }"
           >view post <Arrow class="arrow"
         /></router-link>
       </div>
@@ -20,11 +23,7 @@
         :src="require(`../assets/blogPhotos/${post.photo}.jpg`)"
         alt=""
       />
-      <img
-        v-else
-        :src="require(`../assets/blogPhotos/${post.blogCoverPhoto}.jpg`)"
-        alt=""
-      />
+      <img v-else :src="post.blogCoverPhoto" alt="" />
     </div>
   </div>
 </template>
